@@ -10,6 +10,7 @@ RHOST='r.vestacp.com'
 CHOST='c.vestacp.com'
 REPO='cmmnt'
 VERSION='rhel'
+VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
@@ -26,7 +27,8 @@ if [ "$release" -eq 7 ]; then
     postgresql postgresql-server postgresql-contrib phpPgAdmin e2fsprogs
     openssh-clients ImageMagick curl mc screen ftp zip unzip flex sqlite pcre
     sudo bc jwhois mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype
-    fail2ban rsyslog iptables-services which vesta vesta-nginx vesta-php"
+    fail2ban rsyslog iptables-services which vesta vesta-nginx vesta-php
+    vim-common expect"
 else
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
     php php-common php-cli php-bcmath php-gd php-imap php-mbstring php-mcrypt
@@ -36,7 +38,7 @@ else
     postgresql-server postgresql-contrib phpPgAdmin e2fsprogs openssh-clients
     ImageMagick curl mc screen ftp zip unzip flex sqlite pcre sudo bc jwhois
     mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype fail2ban
-    which vesta vesta-nginx vesta-php"
+    which vesta vesta-nginx vesta-php vim-common expect"
 fi
 
 # Defining help function
@@ -436,6 +438,7 @@ check_result $? "Can't install EPEL repository"
 if [ "$remi" = 'yes' ]; then
     rpm -Uvh --force $vestacp/remi-release.rpm
     check_result $? "Can't install REMI repository"
+    sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/remi.repo
 fi
 
 # Installing Nginx repository
@@ -483,6 +486,7 @@ cp /etc/php-fpm.conf $vst_backups/php-fpm > /dev/null 2>&1
 mv -f /etc/php-fpm.d/* $vst_backups/php-fpm/ > /dev/null 2>&1
 
 # Backing up Bind configuration
+yum remove bind-chroot > /dev/null 2>&1
 service named stop > /dev/null 2>&1
 cp /etc/named.conf $vst_backups/named >/dev/null 2>&1
 
@@ -527,8 +531,8 @@ mv /var/lib/pgsql/data $vst_backups/postgresql/  >/dev/null 2>&1
 
 # Backing up Vesta configuration and data
 service vesta stop > /dev/null 2>&1
-mv /usr/local/vesta/data/* $vst_backups/vesta > /dev/null 2>&1
-mv /usr/local/vesta/conf/* $vst_backups/vesta > /dev/null 2>&1
+mv $VESTA/data/* $vst_backups/vesta > /dev/null 2>&1
+mv $VESTA/conf/* $vst_backups/vesta > /dev/null 2>&1
 
 
 #----------------------------------------------------------#
@@ -604,11 +608,12 @@ fi
 #----------------------------------------------------------#
 
 # Installing rpm packages
-if [ -z "$disable_remi" ]; then 
-    yum -y --disablerepo=* --enablerepo="base,updates,nginx,epel,vesta,remi" \
+if [ "$remi" = 'yes' ]; then
+    yum -y --disablerepo=* \
+        --enablerepo="*base,*updates,nginx,epel,vesta,remi*" \
         install $software
 else
-    yum -y --disablerepo=* --enablerepo="base,updates,nginx,epel,vesta" \
+    yum -y --disablerepo=* --enablerepo="*base,*updates,nginx,epel,vesta" \
         install $software
 fi
 check_result $? "yum install failed"
@@ -677,10 +682,10 @@ wget $vestacp/sudo/admin -O /etc/sudoers.d/admin
 chmod 440 /etc/sudoers.d/admin
 
 # Configuring system env
-echo "export VESTA='/usr/local/vesta'" > /etc/profile.d/vesta.sh
+echo "export VESTA='$VESTA'" > /etc/profile.d/vesta.sh
 chmod 755 /etc/profile.d/vesta.sh
 source /etc/profile.d/vesta.sh
-echo 'PATH=$PATH:/usr/local/vesta/bin' >> /root/.bash_profile
+echo 'PATH=$PATH:'$VESTA'/bin' >> /root/.bash_profile
 echo 'export PATH' >> /root/.bash_profile
 source /root/.bash_profile
 
@@ -699,7 +704,7 @@ chmod 750 $VESTA/conf $VESTA/data/users $VESTA/data/ips $VESTA/log
 chmod -R 750 $VESTA/data/queue
 chmod 660 $VESTA/log/*
 rm -f /var/log/vesta
-ln -s /usr/local/vesta/log /var/log/vesta
+ln -s $VESTA/log /var/log/vesta
 chown admin:admin $VESTA/data/sessions
 chmod 770 $VESTA/data/sessions
 
@@ -850,6 +855,12 @@ if [ "$nginx" = 'yes' ]; then
     chkconfig nginx on
     service nginx start
     check_result $? "nginx start failed"
+
+    # Workaround for OpenVZ/Virtuozzo
+    if [ "$release" -eq '7' ] && [ -e "/proc/vz/veinfo" ]; then
+        echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
+        echo "sleep 3 && service nginx restart" >> /etc/rc.local
+    fi
 fi
 
 
@@ -882,6 +893,12 @@ if [ "$apache" = 'yes'  ]; then
     chkconfig httpd on
     service httpd start
     check_result $? "httpd start failed"
+
+    # Workaround for OpenVZ/Virtuozzo
+    if [ "$release" -eq '7' ] && [ -e "/proc/vz/veinfo" ]; then
+        echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
+        echo "sleep 2 && service httpd restart" >> /etc/rc.local
+    fi
 fi
 
 
@@ -923,6 +940,9 @@ if [ "$vsftpd" = 'yes' ]; then
     chkconfig vsftpd on
     service vsftpd start
     check_result $? "vsftpd start failed"
+
+    # To be deleted after release 0.9.8-18
+    echo "/sbin/nologin" >> /etc/shells
 fi
 
 
@@ -1073,6 +1093,7 @@ fi
 if [ "$dovecot" = 'yes' ]; then
     gpasswd -a dovecot mail
     wget $vestacp/dovecot.tar.gz -O /etc/dovecot.tar.gz
+    wget $vestacp/logrotate/dovecot -O /etc/logrotate.d/dovecot
     cd /etc
     rm -rf dovecot dovecot.conf
     tar -xzf dovecot.tar.gz
@@ -1096,7 +1117,7 @@ if [ "$clamd" = 'yes' ]; then
     wget $vestacp/clamav/freshclam.conf -O /etc/freshclam.conf
     mkdir -p /var/log/clamav
     mkdir -p /var/run/clamav
-    chown clam:clam /var/log/clamav
+    chown clam:clam /var/log/clamav /var/run/clamav
     chown -R clam:clam /var/lib/clamav
     if [ "$release" -eq '7' ]; then
         wget $vestacp/clamav/clamd.service -O \
@@ -1104,6 +1125,10 @@ if [ "$clamd" = 'yes' ]; then
         systemctl --system daemon-reload
     fi
     /usr/bin/freshclam
+    if [ "$release" -eq '7' ]; then
+        sed -i "s/nofork/foreground/" /usr/lib/systemd/system/clamd.service
+        systemctl daemon-reload
+    fi
     chkconfig clamd on
     service clamd start
     #check_result $? "clamd start failed"
@@ -1118,6 +1143,13 @@ if [ "$spamd" = 'yes' ]; then
     chkconfig spamassassin on
     service spamassassin start
     check_result $? "spamassassin start failed"
+    if [ "$release" -eq '7' ]; then
+        groupadd -g 1001 spamd
+        useradd -u 1001 -g spamd -s /sbin/nologin -d \
+            /var/lib/spamassassin spamd
+        mkdir /var/lib/spamassassin
+        chown spamd:spamd /var/lib/spamassassin
+    fi
 fi
 
 
@@ -1134,12 +1166,15 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     cd /usr/share/roundcubemail/plugins/password
     wget $vestacp/roundcube/vesta.php -O drivers/vesta.php
     wget $vestacp/roundcube/config.inc.php -O config.inc.php
+    sed -i "s/localhost/$servername/g" /usr/share/roundcubemail/plugins/password/config.inc.php
     chmod a+r /etc/roundcubemail/*
     chmod -f 777 /var/log/roundcubemail
     r="$(gen_pass)"
     mysql -e "CREATE DATABASE roundcube"
     mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$r'"
     sed -i "s/%password%/$r/g" /etc/roundcubemail/config.inc.php
+    chmod 640 /etc/roundcubemail/config.inc.php
+    chown root:apache /etc/roundcubemail/config.inc.php
     if [ -e "/usr/share/roundcubemail/SQL/mysql.initial.sql" ]; then
         mysql roundcube < /usr/share/roundcubemail/SQL/mysql.initial.sql
     else
@@ -1168,6 +1203,9 @@ if [ "$fail2ban" = 'yes' ]; then
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
     chkconfig fail2ban on
+    /bin/mkdir -p /var/run/fail2ban
+    sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
+    systemctl daemon-reload
     service fail2ban start
     check_result $? "fail2ban start failed"
 fi
@@ -1201,16 +1239,16 @@ $VESTA/bin/v-update-sys-ip
 # Get main ip
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
 
+# Firewall configuration
+if [ "$iptables" = 'yes' ]; then
+    $VESTA/bin/v-update-firewall
+fi
+
 # Get public ip
 pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
 if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
     $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
     ip=$pub_ip
-fi
-
-# Firewall configuration
-if [ "$iptables" = 'yes' ]; then
-    $VESTA/bin/v-update-firewall
 fi
 
 # Configuring mysql host
@@ -1229,20 +1267,19 @@ fi
 $VESTA/bin/v-add-domain admin $servername
 check_result $? "can't create $servername domain"
 
-# Adding cron jobs
-command='sudo /usr/local/vesta/bin/v-update-sys-queue disk'
+command="sudo $VESTA/bin/v-update-sys-queue disk"
 $VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-sys-queue traffic'
+command="sudo $VESTA/bin/v-update-sys-queue traffic"
 $VESTA/bin/v-add-cron-job 'admin' '10' '00' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-sys-queue webstats'
+command="sudo $VESTA/bin/v-update-sys-queue webstats"
 $VESTA/bin/v-add-cron-job 'admin' '30' '03' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-sys-queue backup'
+command="sudo $VESTA/bin/v-update-sys-queue backup"
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-backup-users'
+command="sudo $VESTA/bin/v-backup-users"
 $VESTA/bin/v-add-cron-job 'admin' '10' '05' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-user-stats'
+command="sudo $VESTA/bin/v-update-user-stats"
 $VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-sys-rrd'
+command="sudo $VESTA/bin/v-update-sys-rrd"
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
 service crond restart
 

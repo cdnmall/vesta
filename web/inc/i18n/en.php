@@ -40,6 +40,8 @@ $LANG['en'] = array(
     'NETWORK'  => 'NETWORK',
     'Web Log Manager'  => 'Web Log Manager',
 
+    'no notifications'  => 'no notifications',
+
     'Add User'  => 'Add User',
     'Add Domain'  => 'Add Domain',
     'Add Web Domain'  => 'Add Web Domain',
@@ -107,6 +109,7 @@ $LANG['en'] = array(
     'disable autoupdate' => 'disable autoupdate',
     'turn on notifications' => 'turn on notifications',
     'turn off notifications' => 'turn off notifications',
+    'configure' => 'configure',
 
     'Adding User'  => 'Adding User',
     'Editing User'  => 'Editing User',
@@ -190,6 +193,9 @@ $LANG['en'] = array(
     'template'  => 'template',
     'SSL Support'  => 'SSL Support',
     'SSL Home Directory'  => 'SSL Home',
+    'Lets Encrypt Support'  => 'Lets Encrypt Support',
+    'Lets Encrypt'  => 'Lets Encrypt',
+    'Your certificate will be automatically issued in 5 minutes' => 'Your certificate will be automatically issued in 5 minutes',
     'Proxy Support'  => 'Proxy Support',
     'Proxy Extensions'  => 'Proxy Extensions',
     'Web Statistics'  => 'Web Statistics',
@@ -246,6 +252,7 @@ $LANG['en'] = array(
     'MySQL Usage on localhost'  => 'MySQL Usage on localhost',
     'PostgreSQL Usage on localhost'  => 'PostgreSQL Usage on localhost',
     'Bandwidth Usage eth0'  => 'Bandwidth Usage eth0',
+    'Bandwidth Usage eth1'  => 'Bandwidth Usage eth1',
     'Exim Usage'  => 'Exim Usage',
     'FTP Usage'  => 'FTP Usage',
     'SSH Usage'  => 'SSH Usage',
@@ -285,6 +292,7 @@ $LANG['en'] = array(
     'DNS Support'  => 'DNS Support',
     'Mail Support'  => 'Mail Support',
     'Advanced options'  => 'Advanced options',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'Aliases',
     'SSL Certificate'  => 'SSL Certificate',
     'SSL Key'  => 'SSL Key',
@@ -444,7 +452,7 @@ $LANG['en'] = array(
     'PACKAGE_CREATED_OK'  => 'Package <a href="/edit/package/?package=%s"><b>%s</b></a> has been created successfully.',
     'SSL_GENERATED_OK' => 'Certificate has been generated successfully.',
     'RULE_CREATED_OK' => 'Rule has been created successfully.',
-    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',    // I'm not sure about this text
+    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',
     'Autoupdate has been successfully enabled' => 'Autoupdate has been successfully enabled.',
     'Autoupdate has been successfully disabled' => 'Autoupdate has been successfully disabled.',
     'Cronjob email reporting has been successfully enabled' => 'Cronjob email reporting has been successfully enabled',
@@ -520,7 +528,7 @@ $LANG['en'] = array(
     'Confirm Password'  => 'Confirm Password',
     'Reset'  => 'Reset',
     'Reset Code'  => 'Reset Code',
-    'RESET_NOTICE'  => '',    // should we add something here?
+    'RESET_NOTICE'  => '',
     'RESET_CODE_SENT'  => 'Password reset code has been sent to your email address<br>',
     'MAIL_RESET_SUBJECT'  => 'Password Reset at %s',
     'PASSWORD_RESET_REQUEST' => "To reset your control panel password, please follow this link:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nAlternatively, you may go to https://%s/reset/?action=code&user=%s and enter the following reset code:\n%s\n\nIf you did not request password reset, please ignore this message and accept our apologies.\n\n--\nVesta Control Panel\n",
@@ -580,6 +588,7 @@ $LANG['en'] = array(
     'Starred' => 'Starred',
     'Name' => 'Name',
 
+    'save to favorites' => 'save to favorites',
 
     'File Manager' => 'File Manager',
     'size' => 'size',
@@ -591,12 +600,13 @@ $LANG['en'] = array(
     'NEW DIR' => 'NEW DIR',
     'DELETE' => 'DELETE',
     'RENAME' => 'RENAME',
+    'MOVE' => 'MOVE',
     'RIGHTS' => 'RIGHTS',
     'COPY' => 'COPY',
     'ARCHIVE' => 'ARCHIVE',
     'EXTRACT' => 'EXTRACT',
     'DOWNLOAD' => 'DOWNLOAD',
-    'Are you sure?' => 'Are you sure?',    // unused?
+    'Are you sure?' => 'Are you sure?',
     'Hit' => 'Hit',
     'to reload the page' => 'to reload the page',
     'Directory name cannot be empty' => 'Directory name cannot be empty',
@@ -611,17 +621,20 @@ $LANG['en'] = array(
     'Copy' => 'Copy',
     'Cancel' => 'Cancel',
     'Rename' => 'Rename',
+    'Move' => 'Move',
     'Change Rights' => 'Change Rights',
     'Delete' => 'Delete',
     'Extract' => 'Extract',
     'Create' => 'Create',
     'Compress' => 'Compress',
     'OK' => 'OK',
-    'YOU ARE COPYING' => 'YOU ARE COPYING',    // unused?
+    'YOU ARE COPYING' => 'YOU ARE COPYING',
     'YOU ARE REMOVING' => 'YOU ARE REMOVING',
     'Delete items' => 'Delete items',
     'Copy files' => 'Copy files',
+    'Move files' => 'Move files',
     'Are you sure you want to copy' => 'Are you sure you want to copy',
+    'Are you sure you want to move' => 'Are you sure you want to move',
     'Are you sure you want to delete' => 'Are you sure you want to delete',
     'into' => 'into',
     'existing files will be replaced' => 'existing files will be replaced',
@@ -674,6 +687,7 @@ $LANG['en'] = array(
     'Go to the Top of the File List' => 'Go to the Top of the File List',
     'Go to the Last File' => 'Go to the Last File',
     'Open File / Enter Directory' => 'Open File / Enter Directory',
+    'Edit File' => 'Edit File',
     'Go to Parent Directory' => 'Go to Parent Directory',
     'Select Current File' => 'Select Current File',
     'Select Bunch of Files' => 'Select Bunch of Files',
@@ -720,5 +734,25 @@ $LANG['en'] = array(
 
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
+
+    'Vesta SSL' => 'Vesta SSL',
+    'SUBJECT' => 'SUBJECT',
+    'ALIASES' => 'ALIASES',
+    'NOT_BEFORE' => 'NOT_BEFORE',
+    'NOT_AFTER' => 'NOT_AFTER',
+    'SIGNATURE' => 'SIGNATURE',
+    'PUB_KEY' => 'PUB_KEY',
+    'ISSUER' => 'ISSUER',
+
+    'Use server hostname' => 'Use server hostname',
+    'Use domain hostname' => 'Use domain hostname',
+    'Use STARTTLS' => 'Use STARTTLS',
+    'Use SSL / TLS' => 'Use SSL / TLS',
+    'No encryption' => 'No encryption',
+    'Do not use encryption' => 'Do not use encryption',
+
+    'maximum characters length, including prefix' => 'maximum %s characters length, including prefix',
+
+    'Email Credentials' => 'Email Credentials',
 
 );

@@ -12,6 +12,7 @@
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
+PATH="$PATH:/usr/local/sbin:/sbin:/usr/sbin:/root/bin"
 
 send_email_report() {
     if [ -e '/etc/named.conf' ]; then
@@ -33,6 +34,11 @@ send_email_report() {
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
+
+# Exit
+if [ "$1" = "no" ]; then
+    exit
+fi
 
 # Schedule restart
 if [ "$1" = 'scheduled' ]; then

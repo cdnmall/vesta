@@ -40,6 +40,8 @@ $LANG['fr'] = array(
     'NETWORK'  => 'NETWORK',
     'Web Log Manager'  => 'Web Log Manager',
 
+    'no notifications'  => 'no notifications',
+
     'Add User'  => 'Ajouter un Utilisateur',
     'Add Domain'  => 'Ajouter un Domaine',
     'Add Web Domain'  => 'Ajouter un Domaine',
@@ -107,6 +109,7 @@ $LANG['fr'] = array(
     'disable autoupdate' => 'desactiver la mise-à-jour automatique',
     'turn on notifications' => 'act. les notifications',
     'turn off notifications' => 'désact. les notifications',
+    'configure' => 'configure',
 
     'Adding User'  => "Ajout d'un Utilisateur",
     'Editing User'  => "Édition d'un Utilisateur",
@@ -190,6 +193,9 @@ $LANG['fr'] = array(
     'template'  => 'template',
     'SSL Support'  => 'Support SSL',
     'SSL Home Directory'  => 'Racine SSL',
+    'Lets Encrypt Support'  => 'Lets Encrypt Support',
+    'Lets Encrypt'  => 'Lets Encrypt',
+    'Your certificate will be automatically issued in 5 minutes' => 'Your certificate will be automatically issued in 5 minutes',
     'Proxy Support'  => 'Support Proxy',
     'Proxy Extensions'  => 'Extensions Proxy',
     'Web Statistics'  => 'Statistiques Web',
@@ -246,6 +252,7 @@ $LANG['fr'] = array(
     'MySQL Usage on localhost'  => 'Utilisation de MySQL sur localhost',
     'PostgreSQL Usage on localhost'  => 'Utilisation de PostgreSQL sur localhost',
     'Bandwidth Usage eth0'  => 'Utilisation de la Bande Passante sur eth0',
+    'Bandwidth Usage eth1'  => 'Utilisation de la Bande Passante sur eth1',
     'Exim Usage'  => 'Exim Usage',
     'FTP Usage'  => 'Utilisation du FTP',
     'SSH Usage'  => 'Utilisation SSH',
@@ -285,6 +292,7 @@ $LANG['fr'] = array(
     'DNS Support'  => 'Support DNS',
     'Mail Support'  => 'Support Email',
     'Advanced options'  => 'Options avancées',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'Alias',
     'SSL Certificate'  => 'Certificat SSL',
     'SSL Key'  => 'Clé SSL',
@@ -444,7 +452,7 @@ $LANG['fr'] = array(
     'PACKAGE_CREATED_OK'  => 'Le paquet <a href="/edit/package/?package=%s"><b>%s</b></a> a été créé avec succès.',
     'SSL_GENERATED_OK' => 'Le certificat a été généré avec succès.',
     'RULE_CREATED_OK' => 'Règle a été créée avec succès.',
-    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',    // I'm not sure about this text
+    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',
     'Autoupdate has been successfully enabled' => 'Les mises-à-jour automatiques ont été activées avec succès.',
     'Autoupdate has been successfully disabled' => 'Les mises-à-jour automatiques ont été desactivées avec succès.',
     'Cronjob email reporting has been successfully enabled' => 'Rapports de cronjob a été activé avec succès',
@@ -520,7 +528,7 @@ $LANG['fr'] = array(
     'Confirm Password'  => 'Confirmer le mot de passe',
     'Reset'  => 'Réinitialiser',
     'Reset Code'  => 'Code de Réinitialisation',
-    'RESET_NOTICE'  => '',    // should we add something here?
+    'RESET_NOTICE'  => '',
     'RESET_CODE_SENT'  => 'Un Code de Réinitialisation de votre mot de passe a été envoyé à votre adresse email<br>',
     'MAIL_RESET_SUBJECT'  => 'Réinitialisation du mot de passe de %s',
     'PASSWORD_RESET_REQUEST' => "Pour réinitialiser votre mot de passe, veuillez suivre le lien suivant :\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nSinon, vous pouvez suivre https://%s/reset/?action=code&user=%s et entrer le code de réinitialisation suivant :\n%s\n\nSi vous n'avez pas demandé la réinitialisation de votre mot de passe, veuillez ignorer ce message. Nous vous prions de nous excuser pour la gène occasionnée.\n\n--\nVesta Control Panel\n",
@@ -580,6 +588,7 @@ $LANG['fr'] = array(
     'Starred' => 'Favoris',
     'Name' => 'Nom',
 
+    'save to favorites' => 'save to favorites',
 
     'File Manager' => 'Fichiers',
     'size' => 'taille',
@@ -591,12 +600,13 @@ $LANG['fr'] = array(
     'NEW DIR' => 'RÉP.',
     'DELETE' => 'SUPPR',
     'RENAME' => 'RENOMMER',
+    'MOVE' => 'MOVE',
     'RIGHTS' => 'RIGHTS',
     'COPY' => 'COPIER',
     'ARCHIVE' => 'ARCHIVER',
     'EXTRACT' => 'EXTRAIRE',
     'DOWNLOAD' => 'TÉLÉCHARGER',
-    'Are you sure?' => 'Are you sure?',    // unused?
+    'Are you sure?' => 'Are you sure?',
     'Hit' => 'Hit',
     'to reload the page' => 'to reload the page',
     'Directory name cannot be empty' => 'Directory name cannot be empty',
@@ -611,17 +621,20 @@ $LANG['fr'] = array(
     'Copy' => 'Copier',
     'Cancel' => 'Annuler',
     'Rename' => 'Renommer',
+    'Move' => 'Move',
     'Change Rights' => 'Change Rights',
     'Delete' => 'Supprimer',
     'Extract' => 'Extraire',
     'Create' => 'Créer',
     'Compress' => 'Compresser',
     'OK' => 'OK',
-    'YOU ARE COPYING' => 'YOU ARE COPYING',    // unused?
+    'YOU ARE COPYING' => 'YOU ARE COPYING',
     'YOU ARE REMOVING' => 'YOU ARE REMOVING',
     'Delete items' => 'Delete items',
     'Copy files' => 'Copy files',
+    'Move files' => 'Move files',
     'Are you sure you want to copy' => 'Are you sure you want to copy',
+    'Are you sure you want to move' => 'Are you sure you want to move',
     'Are you sure you want to delete' => 'Are you sure you want to delete',
     'into' => 'into',
     'existing files will be replaced' => 'existing files will be replaced',
@@ -674,6 +687,7 @@ $LANG['fr'] = array(
     'Go to the Top of the File List' => 'Go to the Top of the File List',
     'Go to the Last File' => 'Go to the Last File',
     'Open File / Enter Directory' => 'Open File / Enter Directory',
+    'Edit File' => 'Edit File',
     'Go to Parent Directory' => 'Go to Parent Directory',
     'Select Current File' => 'Select Current File',
     'Select Bunch of Files' => 'Select Bunch of Files',
@@ -720,6 +734,26 @@ $LANG['fr'] = array(
 
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
+
+    'Vesta SSL' => 'Vesta SSL',
+    'SUBJECT' => 'SUBJECT',
+    'ALIASES' => 'ALIASES',
+    'NOT_BEFORE' => 'NOT_BEFORE',
+    'NOT_AFTER' => 'NOT_AFTER',
+    'SIGNATURE' => 'SIGNATURE',
+    'PUB_KEY' => 'PUB_KEY',
+    'ISSUER' => 'ISSUER',
+
+    'Use server hostname' => 'Use server hostname',
+    'Use domain hostname' => 'Use domain hostname',
+    'Use STARTTLS' => 'Use STARTTLS',
+    'Use SSL / TLS' => 'Use SSL / TLS',
+    'No encryption' => 'No encryption',
+    'Do not use encryption' => 'Do not use encryption',
+
+    'maximum characters length, including prefix' => 'maximum %s characters length, including prefix',
+
+    'Email Credentials' => 'Email Credentials',
 
 
 // Texts below doesn't exist in en.php

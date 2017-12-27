@@ -44,6 +44,8 @@ $LANG['hu'] = array(
     'NETWORK'  => 'NETWORK',
     'Web Log Manager'  => 'Web Log Manager',
 
+    'no notifications'  => 'no notifications',
+
     'Add User'  => 'Új felhasználó',
     'Add Domain'  => 'Új domain',
     'Add Web Domain'  => 'Új Web Domain',
@@ -111,6 +113,7 @@ $LANG['hu'] = array(
     'disable autoupdate' => 'automatikus frissítés tiltása',
     'turn on notifications' => 'értesít. bekapcsolása',
     'turn off notifications' => 'értesít. kikapcsolása',
+    'configure' => 'configure',
 
     'Adding User'  => 'Felhasználó hozzáadása',
     'Editing User'  => 'Felhasználó szerkesztése',
@@ -194,6 +197,9 @@ $LANG['hu'] = array(
     'template'  => 'sablon',
     'SSL Support'  => 'SSL támogatás',
     'SSL Home Directory'  => 'SSL kezdőlap',
+    'Lets Encrypt Support'  => 'Lets Encrypt Support',
+    'Lets Encrypt'  => 'Lets Encrypt',
+    'Your certificate will be automatically issued in 5 minutes' => 'Your certificate will be automatically issued in 5 minutes',
     'Proxy Support'  => 'Proxy támogatás',
     'Proxy Extensions'  => 'Proxy kiterjesztések',
     'Web Statistics'  => 'Web statisztikák',
@@ -250,6 +256,7 @@ $LANG['hu'] = array(
     'MySQL Usage on localhost'  => 'MySQL használat a localhoston',
     'PostgreSQL Usage on localhost'  => 'PostgreSQL használat a localhoston',
     'Bandwidth Usage eth0'  => 'eth0 sávszélesség használat',
+    'Bandwidth Usage eth1' => 'eth1 sávszélesség használat',
     'Exim Usage' => 'Exim használat',
     'FTP Usage'  => 'FTP használat',
     'SSH Usage'  => 'SSH használat',
@@ -289,6 +296,7 @@ $LANG['hu'] = array(
     'DNS Support'  => 'DNS támogatás',
     'Mail Support'  => 'Mail támogatás',
     'Advanced options'  => 'Haladó beállítások',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'Aliaszok',
     'SSL Certificate'  => 'SSL igazolás',
     'SSL Key'  => 'SSL kulcs',
@@ -448,7 +456,7 @@ $LANG['hu'] = array(
     'PACKAGE_CREATED_OK'  => 'A(z) <a href="/edit/package/?package=%s"><b>%s</b></a> csomag sikeresen létrehozva.',
     'SSL_GENERATED_OK' => 'A tanúsítvány sikeresen létrehozva.',
     'RULE_CREATED_OK' => 'Szabály sikeresen létrehozva.',
-    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',    // I'm not sure about this text
+    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',
     'Autoupdate has been successfully enabled' => 'Az automatikus frissítés bekapcsolva.',
     'Autoupdate has been successfully disabled' => 'Az automatikus frissítés kikapcsolva.',
     'Cronjob email reporting has been successfully enabled' => 'Cronjob e-mail jelentés bekapcsolva.',
@@ -584,6 +592,7 @@ $LANG['hu'] = array(
     'Starred' => 'Starred',
     'Name' => 'Name',
 
+    'save to favorites' => 'save to favorites',
 
     'File Manager' => 'File Manager',
     'size' => 'size',
@@ -595,6 +604,7 @@ $LANG['hu'] = array(
     'NEW DIR' => 'NEW DIR',
     'DELETE' => 'DELETE',
     'RENAME' => 'RENAME',
+    'MOVE' => 'MOVE',
     'RIGHTS' => 'RIGHTS',
     'COPY' => 'COPY',
     'ARCHIVE' => 'ARCHIVE',
@@ -615,6 +625,7 @@ $LANG['hu'] = array(
     'Copy' => 'Copy',
     'Cancel' => 'Cancel',
     'Rename' => 'Rename',
+    'Move' => 'Move',
     'Change Rights' => 'Change Rights',
     'Delete' => 'Delete',
     'Extract' => 'Extract',
@@ -625,7 +636,9 @@ $LANG['hu'] = array(
     'YOU ARE REMOVING' => 'YOU ARE REMOVING',
     'Delete items' => 'Delete items',
     'Copy files' => 'Copy files',
+    'Move files' => 'Move files',
     'Are you sure you want to copy' => 'Are you sure you want to copy',
+    'Are you sure you want to move' => 'Are you sure you want to move',
     'Are you sure you want to delete' => 'Are you sure you want to delete',
     'into' => 'into',
     'existing files will be replaced' => 'existing files will be replaced',
@@ -678,6 +691,7 @@ $LANG['hu'] = array(
     'Go to the Top of the File List' => 'Go to the Top of the File List',
     'Go to the Last File' => 'Go to the Last File',
     'Open File / Enter Directory' => 'Open File / Enter Directory',
+    'Edit File' => 'Edit File',
     'Go to Parent Directory' => 'Go to Parent Directory',
     'Select Current File' => 'Select Current File',
     'Select Bunch of Files' => 'Select Bunch of Files',
@@ -725,7 +739,23 @@ $LANG['hu'] = array(
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
 
+    'Vesta SSL' => 'Vesta SSL',
+    'SUBJECT' => 'SUBJECT',
+    'ALIASES' => 'ALIASES',
+    'NOT_BEFORE' => 'NOT_BEFORE',
+    'NOT_AFTER' => 'NOT_AFTER',
+    'SIGNATURE' => 'SIGNATURE',
+    'PUB_KEY' => 'PUB_KEY',
+    'ISSUER' => 'ISSUER',
 
-// Texts below doesn't exist in en.php
-    'Bandwidth Usage eth1' => 'eth1 sávszélesség használat',
+    'Use server hostname' => 'Use server hostname',
+    'Use domain hostname' => 'Use domain hostname',
+    'Use STARTTLS' => 'Use STARTTLS',
+    'Use SSL / TLS' => 'Use SSL / TLS',
+    'No encryption' => 'No encryption',
+    'Do not use encryption' => 'Do not use encryption',
+
+    'maximum characters length, including prefix' => 'maximum %s characters length, including prefix',
+
+    'Email Credentials' => 'Email Credentials',
 );

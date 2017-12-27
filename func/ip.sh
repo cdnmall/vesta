@@ -87,9 +87,9 @@ increase_ip_value() {
     fi
 
     sed -i "s/$web_key='$current_web'/$web_key='$new_web'/g" \
-        $VESTA/data/ips/$ip
+        $VESTA/data/ips/$sip
     sed -i "s/$usr_key='$current_usr'/$usr_key='$new_usr'/g" \
-        $VESTA/data/ips/$ip
+        $VESTA/data/ips/$sip
 }
 
 # Decrease ip value
@@ -103,7 +103,7 @@ decrease_ip_value() {
     current_usr=$(grep "$usr_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
 
     if [ -z "$current_web" ]; then
-        check_result $E_PARSING "Parsing errpr"
+        check_result $E_PARSING "Parsing error"
     fi
 
     new_web=$((current_web - 1))

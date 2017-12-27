@@ -1,7 +1,8 @@
+#!/usr/bin/env bash
 # Internal variables
 HOMEDIR='/home'
 BACKUP='/backup'
-BACKUP_GZIP=5
+BACKUP_GZIP=9
 BACKUP_DISK_LIMIT=95
 BACKUP_LA_LIMIT=5
 RRD_STEP=300
@@ -97,7 +98,7 @@ check_result() {
 # Argument list checker
 check_args() {
     if [ "$1" -gt "$2" ]; then
-        echo "Usage: $SCRIPT $3"
+        echo "Usage: $(basename $0) $3"
         check_result $E_ARGS "not enought arguments" >/dev/null
     fi
 }
@@ -108,6 +109,7 @@ is_system_enabled() {
         check_result $E_DISABLED "$2 is not enabled"
     fi
 }
+
 
 # User package check
 is_package_full() {
@@ -366,6 +368,40 @@ decrease_user_value() {
     sed -i "s/$key='$old'/$key='$new'/g" $conf
 }
 
+# Notify user
+send_notice() {
+    topic=$1
+    notice=$2
+
+    if [ "$notify" = 'yes' ]; then
+        touch $USER_DATA/notifications.conf
+        chmod 660 $USER_DATA/notifications.conf
+
+        time_n_date=$(date +'%T %F')
+        time=$(echo "$time_n_date" |cut -f 1 -d \ )
+        date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+        nid=$(grep "NID=" $USER_DATA/notifications.conf |cut -f 2 -d \')
+        nid=$(echo "$nid" |sort -n |tail -n1)
+        if [ ! -z "$nid" ]; then
+            nid="$((nid +1))"
+        else
+            nid=1
+        fi
+
+        str="NID='$nid' TOPIC='$topic' NOTICE='$notice' TYPE='$type'"
+        str="$str ACK='no' TIME='$time' DATE='$date'"
+
+        echo "$str" >> $USER_DATA/notifications.conf
+
+        if [ -z "$(grep NOTIFICATIONS $USER_DATA/user.conf)" ]; then
+            sed -i "s/^TIME/NOTIFICATIONS='yes'\nTIME/g" $USER_DATA/user.conf
+        else
+            update_user_value "$user" '$NOTIFICATIONS' "yes"
+        fi
+    fi
+}
+
 # Recalculate U_DISK value
 recalc_user_disk_usage() {
     u_usage=0
@@ -448,6 +484,7 @@ sync_cron_jobs() {
     rm -f $crontab
     if [ "$CRON_REPORTS" = 'yes' ]; then
         echo "MAILTO=$CONTACT" > $crontab
+        echo 'CONTENT_TYPE="text/plain; charset=utf-8"' >> $crontab
     fi
     while read line; do
         eval $line
@@ -465,12 +502,12 @@ sync_cron_jobs() {
 is_user_format_valid() {
     if [ ${#1} -eq 1 ]; then
         if ! [[ "$1" =~ ^^[[:alnum:]]$ ]]; then
-            echo "invalid $2 format :: $1"
+            check_result $E_INVALID "invalid $2 format :: $1"
         fi
     else
         if ! [[ "$1" =~ ^[[:alnum:]][-|\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]
             then
-            echo "invalid $2 format :: $1"
+            check_result $E_INVALID "invalid $2 format :: $1"
         fi
     fi
 }
@@ -478,9 +515,8 @@ is_user_format_valid() {
 # Domain format validator
 is_domain_format_valid() {
     object_name=${2-domain}
-    mask1='(([[:alnum:]](-?[[:alnum:]])*)\.)'
-    mask2='*[[:alnum:]](-?[[:alnum:]])+\.[[:alnum:]]{2,}'
-    if ! [[ "$1" =~ ^${mask1}${mask2}$ ]]; then
+    exclude="[!|@|#|$|^|&|*|(|)|+|=|{|}|:|,|<|>|?|_|/|\|\"|'|;|%|\`| ]"
+    if [[ $1 =~ $exclude ]] || [[ $1 =~ ^[0-9]+$ ]] || [[ $1 =~ "\.\." ]]; then
         check_result $E_INVALID "invalid $object_name format :: $1"
     fi
 }
@@ -502,15 +538,14 @@ is_alias_format_valid() {
 is_ip_format_valid() {
     object_name=${2-ip}
     ip_regex='([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
-    ip_clean=$(echo "${1%/[0-9][0-9]}")
-    ip_clean=$(echo "${1%/[0-9]}")
+    ip_clean=$(echo "${1%/*}")
     if ! [[ $ip_clean =~ ^$ip_regex\.$ip_regex\.$ip_regex\.$ip_regex$ ]]; then
         check_result $E_INVALID "invalid $object_name format :: $1"
     fi
     if [ $1 != "$ip_clean" ]; then
         ip_cidr="$ip_clean/"
         ip_cidr=$(echo "${1#$ip_cidr}")
-        if [[ "$ip_cidr" -gt 32 ]]; then
+        if [[ "$ip_cidr" -gt 32 ]] || [[ "$ip_cidr" =~ [:alnum:] ]]; then
             check_result $E_INVALID "invalid $object_name format :: $1"
         fi
     fi
@@ -583,14 +618,17 @@ is_date_format_valid() {
 # Database user validator
 is_dbuser_format_valid() {
     exclude="[!|@|#|$|^|&|*|(|)|+|=|{|}|:|,|<|>|?|/|\|\"|'|;|%|\`| ]"
-    if [[ "$1" =~ $exclude ]] || [ 17 -le ${#1} ]; then
+    if [ 17 -le ${#1} ]; then
+		check_result $E_INVALID "mysql username can be up to 16 characters long"
+	fi
+    if [[ "$1" =~ $exclude ]]; then
         check_result $E_INVALID "invalid $2 format :: $1"
     fi
 }
 
 # DNS record type validator
 is_dns_type_format_valid() {
-    known_dnstype='A,AAAA,NS,CNAME,MX,TXT,SRV,DNSKEY,KEY,IPSECKEY,PTR,SPF'
+    known_dnstype='A,AAAA,NS,CNAME,MX,TXT,SRV,DNSKEY,KEY,IPSECKEY,PTR,SPF,TLSA'
     if [ -z "$(echo $known_dnstype |grep -w $1)" ]; then
         check_result $E_INVALID "invalid dns record type format :: $1"
     fi
@@ -602,10 +640,10 @@ is_dns_record_format_valid() {
         is_ip_format_valid "$1"
     fi
     if [ "$rtype" = 'NS' ]; then
-        is_domain_format_valid "$1" 'ns_record'
+        is_domain_format_valid "${1::-1}" 'ns_record'
     fi
     if [ "$rtype" = 'MX' ]; then
-        is_domain_format_valid "$1" 'mx_record'
+        is_domain_format_valid "${1::-1}" 'mx_record'
         is_int_format_valid "$priority" 'priority_record'
     fi
 
@@ -613,7 +651,7 @@ is_dns_record_format_valid() {
 
 # Email format validator
 is_email_format_valid() {
-    if [[ ! "$1" =~ "@" ]] ; then
+    if [[ ! "$1" =~ ^[A-Za-z0-9._%+-]+@[[:alnum:].-]+\.[A-Za-z]{2,63}$ ]] ; then
         check_result $E_INVALID "invalid email format :: $1"
     fi
 }
@@ -689,17 +727,18 @@ is_cron_format_valid() {
             check_format='ok'
         fi
     fi
-    if [[ "$1" =~ ^[0-9][-|,|0-9]{0,28}[0-9]$ ]]; then
+    if [[ "$1" =~ ^[0-9][-|,|0-9]{0,70}[\/][0-9]$ ]]; then
         check_format='ok'
         crn_values=${1//,/ }
         crn_values=${crn_values//-/ }
+        crn_values=${crn_values//\// }
         for crn_vl in $crn_values; do
             if [ "$crn_vl" -gt $limit ]; then
                 check_format='invalid'
             fi
         done
     fi
-    if [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -lt $limit ]; then
+    if [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -le $limit ]; then
         check_format='ok'
     fi
     if [ "$check_format" != 'ok' ]; then
@@ -804,4 +843,45 @@ is_format_valid() {
             esac
         fi
     done
+}
+
+# Domain argument formatting
+format_domain() {
+    if [[ "$domain" = *[![:ascii:]]* ]]; then
+        if [[ "$domain" =~ [[:upper:]] ]]; then
+            domain=$(echo "$domain" |sed 's/[[:upper:]].*/\L&/')
+        fi
+    else
+        if [[ "$domain" =~ [[:upper:]] ]]; then
+            domain=$(echo "$domain" |tr '[:upper:]' '[:lower:]')
+        fi
+    fi
+    if [[ "$domain" =~ ^www\..* ]]; then
+        domain=$(echo "$domain" |sed -e "s/^www.//")
+    fi
+    if [[ "$domain" =~ .*\.$ ]]; then
+        domain=$(echo "$domain" |sed -e "s/\.$//")
+    fi
+    if [[ "$domain" =~ ^\. ]]; then
+        domain=$(echo "$domain" |sed -e "s/^\.//")
+    fi
+
+}
+
+format_domain_idn() {
+    if [ -z "$domain_idn" ]; then
+        domain_idn=$domain
+    fi
+    if [[ "$domain_idn" = *[![:ascii:]]* ]]; then
+        domain_idn=$(idn -t --quiet -a $domain_idn)
+    fi
+}
+
+format_aliases() {
+    if [ ! -z "$aliases" ] && [ "$aliases" != 'none' ]; then
+        aliases=$(echo $aliases |tr '[:upper:]' '[:lower:]' |tr ',' '\n')
+        aliases=$(echo "$aliases" |sed -e "s/\.$//" |sort -u)
+        aliases=$(echo "$aliases" |grep -v www.$domain |sed -e "/^$/d")
+        aliases=$(echo "$aliases" |tr '\n' ',' |sed -e "s/,$//")
+    fi
 }
